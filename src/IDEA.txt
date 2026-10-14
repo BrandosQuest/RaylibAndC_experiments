@@ -1,0 +1,6 @@
+Now, my idea is: to have a 2 panels system
+on the right of your headyou have a 2 coord system taht has pitch and volume and your hand opening starts the sound(or your hand opening is the sound volume)
+on the other side the same but here you control the soudn quality like on a synth(look up what axix you can put on there and witch information controls the sound quality)
+how may armonics maybe?
+
+afterall the idea is to map the sound quality and make it intuitive to play

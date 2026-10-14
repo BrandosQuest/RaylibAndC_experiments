@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/build/external/raylib-master/src/**",
+                "${workspaceFolder}/src/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "GRAPHICS_API_OPENGL_33",
+                "PLATFORM_DESKTOP"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
+}

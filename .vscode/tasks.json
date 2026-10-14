@@ -1,20 +1,10 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
         {
             "label": "build debug",
             "type": "process",
             "command": "make",
-            "windows": {
-                "command": "mingw32-make.exe",
-            },
-            "osx": {
-                "args": [
-                    "config=debug_arm64"
-                ],
-            },
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -22,23 +12,15 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "dependsOn":["UpdateMake"]
+            "dependsOn": ["UpdateMake"]
         },
         {
             "label": "build debug no premake",
             "type": "process",
             "command": "make",
-            "windows": {
-                "command": "mingw32-make.exe",
-            },
-            "osx": {
-                "args": [
-                    "config=debug_arm64"
-                ],
-            },
             "group": {
                 "kind": "build",
-                "isDefault": true
+                "isDefault": false
             },
             "problemMatcher": [
                 "$gcc"
@@ -48,59 +30,33 @@
             "label": "build release",
             "type": "process",
             "command": "make",
-            "windows": {
-                "command": "mingw32-make.exe",
-                "args": [
-                    "config=release_x64"
-                ],
-            },
-            "linux": {
-                "args": [
-                    "config=release_x64"
-                ],
-            },
-            "osx": {
-                "args": [
-                    "config=release_arm64"
-                ],
-            },
-             "group": {
+            "args": [
+                "config=release_x64"
+            ],
+            "group": {
                 "kind": "build",
                 "isDefault": false
             },
             "problemMatcher": [
                 "$gcc"
             ],
-            "dependsOn":["UpdateMake"]
+            "dependsOn": ["UpdateMake"]
         },
         {
             "label": "Clean",
             "type": "process",
             "command": "make",
-            "windows": {
-                "command": "mingw32-make.exe",
-                "args": [
-                    "clean"
-                ],
-            },
-            "linux": {
-                "args": [
-                    "clean"
-                ],
-            },
-            "osx": {
-                "args": [
-                    "clean"
-                ],
-            },
-             "group": {
+            "args": [
+                "clean"
+            ],
+            "group": {
                 "kind": "build",
                 "isDefault": false
             },
             "problemMatcher": [
                 "$gcc"
             ],
-            "dependsOn":["UpdateMake"]
+            "dependsOn": ["UpdateMake"]
         },
         {
             "label": "UpdateMake",
@@ -112,15 +68,6 @@
             "args": [
                 "gmake"
             ],
-            "windows": {
-                "command": "./premake5.exe"
-            },
-            "linux": {
-                "command": "./premake5"
-            },
-            "osx": {
-                "command": "premake5.osx"
-            },
             "group": "build",
             "dependsOn": ["Generate compile_commands.json"]
         },
@@ -134,15 +81,6 @@
             "args": [
                 "ecc"
             ],
-            "windows": {
-                "command": "./premake5.exe"
-            },
-            "linux": {
-                "command": "./premake5"
-            },
-            "osx": {
-                "command": "premake5.osx"
-            },
             "group": "build",
             "problemMatcher": []
         }

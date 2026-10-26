@@ -1,14 +1,13 @@
 #include "raylib.h"
-#include "resource_dir.h"
+#include <time.h> // C Standard Library for real-world time
 
 int main(void)
 {
     // ========================================================
     // 1. INITIALIZATION
     // ========================================================
-    SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
-    InitWindow(800, 600, "RaylibAndC_experiments");
-    SearchAndSetResourceDir("resources");
+    InitWindow(800, 600, "Time Example");
+    SetTargetFPS(60);
 
     // ========================================================
     // GAME LOOP
@@ -18,14 +17,32 @@ int main(void)
         // ----------------------------------------------------
         // 2. UPDATE
         // ----------------------------------------------------
+        // Raylib timing:
+        double elapsedSeconds = GetTime();
+        float deltaTime = GetFrameTime();
+        int currentFPS = GetFPS();
 
+        // Standard C wall-clock time:
+        time_t rawTime = time(NULL);
+        struct tm *info = localtime(&rawTime);
 
-        // ----------------------------------------------------
+        // Format wall-clock time as HH:MM:SS
+        char clockString[20];
+        strftime(clockString, sizeof(clockString), "%Y-%m-%d %H:%M:%S", info);
+
+        // ---------------------------------------------------- 
         // 3. DRAW
         // ----------------------------------------------------
         BeginDrawing();
             ClearBackground(BLACK);
-            DrawText(TextFormat("FPS: %d", GetFPS()), 10, 10, 20, GREEN);
+
+            // Draw Raylib game time
+            DrawText(TextFormat("Running Time: %.2f s", elapsedSeconds), 50, 50, 20, RAYWHITE);
+            DrawText(TextFormat("Delta Time: %.4f s", deltaTime), 50, 80, 20, RAYWHITE);
+            DrawText(TextFormat("FPS: %i", currentFPS), 50, 110, 20, GREEN);
+
+            // Draw real-world wall clock
+            DrawText(TextFormat("Current Time: %s", clockString), 50, 160, 20, YELLOW);
         EndDrawing();
     }
 
@@ -33,6 +50,5 @@ int main(void)
     // 4. DE-INITIALIZATION
     // ========================================================
     CloseWindow();
-
     return 0;
 }

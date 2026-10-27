@@ -9,12 +9,17 @@ static cv::Mat rgb_frame;
 extern "C" {
 
 int init_camera(int width, int height) {
-    cap.open(0); // Open the default webcam (index 0)
+    // 1. Force the native Linux V4L2 backend (bypasses the buggy GStreamer)
+    cap.open(0, cv::CAP_V4L2); 
     if (!cap.isOpened()) return 0;
     
-    // Request a specific resolution
+    // 2. Force MJPEG compression to allow HD resolutions over USB
+    cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+    
+    // 3. Request your dimensions
     cap.set(cv::CAP_PROP_FRAME_WIDTH, width);
     cap.set(cv::CAP_PROP_FRAME_HEIGHT, height);
+    
     return 1;
 }
 

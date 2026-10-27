@@ -8,3 +8,7 @@ git checkout v2.16.1
 
 LD_LIBRARY_PATH=./lib ./bin/Debug/RaylibAndC_experiments
 
+whan updating the build/premake5.lua file
+cd build
+./premake5 gmake2
+cd ..

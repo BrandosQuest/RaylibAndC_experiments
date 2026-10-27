@@ -3,8 +3,12 @@
 #include "tensorflow/lite/c/c_api.h"
 #include "camera.h"
 
-#define CAM_WIDTH 640
-#define CAM_HEIGHT 480
+#define CAM_WIDTH 1280
+#define CAM_HEIGHT 720
+
+// #define CAM_WIDTH 640
+// #define CAM_HEIGHT 480
+
 
 int main(void) {
     if (!init_camera(CAM_WIDTH, CAM_HEIGHT)) {

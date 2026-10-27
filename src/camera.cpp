@@ -25,7 +25,7 @@ unsigned char* get_camera_frame(void) {
     if (frame.empty()) return nullptr;
     
     // Convert BGR to RGB for Raylib and TFLite
-    cv::cvtColor(frame, rgb_frame, cv::COLOR_BGR2RGB);
+    cv::cvtColor(frame, rgb_frame, cv::COLOR_BGR2RGBA);
     
     // Return a raw pointer to the pixel array
     return rgb_frame.data; 

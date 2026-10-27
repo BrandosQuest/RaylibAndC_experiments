@@ -153,7 +153,7 @@ if (downloadRaylib) then
             ["Game Resource Files/*"] = {"../resources/**"},
         }
 
-        files {"../src/**.c", "../src/**.h"}
+        files {"../src/**.c", "../src/**.h", "../src/**.cpp"}
 
         filter{}
 
@@ -206,7 +206,8 @@ if (downloadRaylib) then
 
         location "../"
 
-        language "C"
+        --language "C"
+        language "C++"
         targetdir "../bin/%{cfg.buildcfg}"
 
         filter {"options:wayland=on"}
@@ -244,9 +245,9 @@ if (downloadRaylib) then
         vpaths
         {
             ["Header Files"] = { raylib_dir .. "/src/**.h"},
-            ["Source Files/*"] = { raylib_dir .. "/src/**.c"},
+            ["Source Files/*"] = { raylib_dir .. "/src/**.c", raylib_dir .. "/src/**.cpp"},
         }
-        files {raylib_dir .. "/src/*.h", raylib_dir .. "/src/*.c"}
+        files {raylib_dir .. "/src/*.h", raylib_dir .. "/src/*.c", raylib_dir .. "/src/*.cpp"}
 
         removefiles {raylib_dir .. "/src/rcore_*.c"}
 

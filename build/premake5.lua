@@ -179,6 +179,25 @@ if (downloadRaylib) then
 
         filter{}
 
+        -- 1. Tell the compiler where the TFLite C headers are
+        includedirs { "../include" }
+
+        -- 2. Tell the linker where the TFLite shared library is
+        libdirs { "../lib" }
+
+        -- 3. Link TensorFlow Lite and the C++ standard library (required by OpenCV)
+        links { "tensorflowlite_c", "stdc++" }
+
+        -- 4. Inject OpenCV headers via pkg-config
+        buildoptions { "`pkg-config --cflags opencv4`" }
+
+        -- 5. Inject OpenCV libraries and the runtime path (rpath) for TFLite
+        -- Note: Assuming your executable ends up in bin/Debug/, the relative path back up to lib/ is ../../lib
+        linkoptions { 
+            "`pkg-config --libs opencv4`",
+            "-Wl,-rpath=../../lib" 
+        }
+
 
     project "raylib"
         kind "StaticLib"

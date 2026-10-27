@@ -1,5 +1,8 @@
 #include "raylib.h"
 #include <time.h> // C Standard Library for real-world time
+#include <stdio.h>
+#include <stdlib.h>
+#include "tensorflow/lite/c/c_api.h"
 
 int main(void)
 {

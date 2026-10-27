@@ -1,0 +1,8 @@
+./bin/Debug/RaylibAndC_experiments
+make
+
+
+git clone https://github.com/tensorflow/tensorflow.git
+cd tensorflow
+git checkout v2.16.1
+

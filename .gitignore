@@ -1,6 +1,9 @@
+tensorflow/
+
 # Build outputs
 bin/
 obj/
+
 
 # Generated Makefiles (premake regenerates these)
 Makefile

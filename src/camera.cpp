@@ -24,6 +24,10 @@ int init_camera(int width, int height) {
     // Reduce internal driver buffer to 1 frame so you don't get latency lag
     cap.set(cv::CAP_PROP_BUFFERSIZE, 1);
 
+    // // Prevent the webcam from dropping below 30 FPS in indoor lighting
+    // cap.set(cv::CAP_PROP_AUTO_EXPOSURE, 3); // 1 = Manual mode on V4L2 (3 = Auto)
+    // cap.set(cv::CAP_PROP_EXPOSURE, 150);    // Fixed fast shutter speed
+
     return 1;
 }
 

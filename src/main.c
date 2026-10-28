@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include "tensorflow/lite/c/c_api.h"
 #include "camera.h"
+#include "tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h"
 
 #define CAM_WIDTH 1280
 #define CAM_HEIGHT 720
@@ -34,6 +35,13 @@ int main(void) {
 
     TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
     TfLiteInterpreterOptionsSetNumThreads(options, 4);
+
+    // Explicitly create and attach the XNNPACK SIMD delegate
+    TfLiteXNNPackDelegateOptions xnnpack_options = TfLiteXNNPackDelegateOptionsDefault();
+    xnnpack_options.num_threads = 4;
+    TfLiteDelegate* xnnpack_delegate = TfLiteXNNPackDelegateCreate(&xnnpack_options);
+    TfLiteInterpreterOptionsAddDelegate(options, xnnpack_delegate);
+
     TfLiteInterpreter* palm_interpreter = TfLiteInterpreterCreate(palm_model, options);
     TfLiteInterpreterAllocateTensors(palm_interpreter);
 
@@ -83,6 +91,7 @@ int main(void) {
     CloseWindow();
 
     TfLiteInterpreterDelete(palm_interpreter);
+    TfLiteXNNPackDelegateDelete(xnnpack_delegate);
     TfLiteInterpreterOptionsDelete(options);
     TfLiteModelDelete(palm_model);
 

@@ -33,7 +33,7 @@ int main(void) {
     }
 
     TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
-    TfLiteInterpreterOptionsSetNumThreads(options, 2);
+    TfLiteInterpreterOptionsSetNumThreads(options, 4);
     TfLiteInterpreter* palm_interpreter = TfLiteInterpreterCreate(palm_model, options);
     TfLiteInterpreterAllocateTensors(palm_interpreter);
 
@@ -47,23 +47,34 @@ int main(void) {
         TfLiteTensorType(input_tensor),   // kTfLiteFloat32 (1)
         TfLiteTensorByteSize(input_tensor));
 
+    float* input_buffer = (float*)TfLiteTensorData(input_tensor);
+    int model_input_size = TfLiteTensorDim(input_tensor, 1);
+
     while (!WindowShouldClose()) {
-        // 1. Grab the raw RGB pixel data from OpenCV
+        double t0 = GetTime();
         unsigned char* frameData = get_camera_frame();
-        
-        // 2. Upload the new pixels to the Raylib texture on the GPU
+        double t1 = GetTime();
+
+        get_preprocessed_frame(input_buffer, model_input_size);
+        double t2 = GetTime();
+
+        TfLiteInterpreterInvoke(palm_interpreter);
+        double t3 = GetTime();
+
         if (frameData != NULL) {
             UpdateTexture(camTexture, frameData);
         }
 
-        // 3. Draw the texture to the screen
         BeginDrawing();
-        //ClearBackground(BLACK);
         if (frameData != NULL) {
             DrawTexture(camTexture, 0, 0, WHITE);
-        } else {
-            DrawText("Waiting for camera...", 10, 10, 20, RED);
         }
+        
+        DrawRectangle(10, 10, 320, 110, Fade(BLACK, 0.7f));
+        DrawText(TextFormat("FPS: %i", GetFPS()), 20, 20, 20, GREEN);
+        DrawText(TextFormat("Cam Capture: %.1f ms", (t1 - t0) * 1000.0), 20, 45, 18, RAYWHITE);
+        DrawText(TextFormat("Preprocess:  %.1f ms", (t2 - t1) * 1000.0), 20, 70, 18, RAYWHITE);
+        DrawText(TextFormat("TFLite Run:  %.1f ms", (t3 - t2) * 1000.0), 20, 95, 18, YELLOW);
         EndDrawing();
     }
 

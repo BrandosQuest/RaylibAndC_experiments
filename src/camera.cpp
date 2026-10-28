@@ -5,6 +5,7 @@
 static cv::VideoCapture cap;
 static cv::Mat frame;
 static cv::Mat rgb_frame;
+static cv::Mat flipped_rgb_frame;
 
 extern "C" {
 
@@ -31,9 +32,11 @@ unsigned char* get_camera_frame(void) {
     
     // Convert BGR to RGB for Raylib and TFLite
     cv::cvtColor(frame, rgb_frame, cv::COLOR_BGR2RGBA);
+
+    cv::flip(rgb_frame, flipped_rgb_frame, 1); //make the image behavior like a mirror, flip it horizontally
     
     // Return a raw pointer to the pixel array
-    return rgb_frame.data; 
+    return flipped_rgb_frame.data; 
 }
 
 void close_camera(void) {

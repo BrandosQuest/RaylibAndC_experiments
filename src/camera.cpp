@@ -1,11 +1,11 @@
 #include "camera.h"
 #include <opencv2/opencv.hpp>
+#include <stdio.h>
 
-// Static instances hide the C++ objects from your C code
 static cv::VideoCapture cap;
+static cv::Mat raw_frame;
 static cv::Mat frame;
-static cv::Mat rgb_frame;
-static cv::Mat flipped_rgb_frame;
+static cv::Mat rgba_frame;
 static cv::Mat resized_bgr;
 static cv::Mat padded_bgr;
 static cv::Mat padded_rgb;
@@ -16,17 +16,28 @@ int init_camera(int width, int height) {
     cap.open(0, cv::CAP_V4L2);
     if (!cap.isOpened()) return 0;
 
-    // Force MJPG and 30 FPS
-    cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+    int fourcc = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');
+    
+    // Set MJPG, then resolution, then MJPG and FPS again so V4L2 doesn't reset it
+    cap.set(cv::CAP_PROP_FOURCC, fourcc);
     cap.set(cv::CAP_PROP_FRAME_WIDTH, width);
     cap.set(cv::CAP_PROP_FRAME_HEIGHT, height);
+    cap.set(cv::CAP_PROP_FOURCC, fourcc);
     cap.set(cv::CAP_PROP_FPS, 30);
-    // Reduce internal driver buffer to 1 frame so you don't get latency lag
     cap.set(cv::CAP_PROP_BUFFERSIZE, 1);
 
-    // // Prevent the webcam from dropping below 30 FPS in indoor lighting
-    // cap.set(cv::CAP_PROP_AUTO_EXPOSURE, 3); // 1 = Manual mode on V4L2 (3 = Auto)
-    // cap.set(cv::CAP_PROP_EXPOSURE, 150);    // Fixed fast shutter speed
+    // Query what the Linux V4L2 driver ACTUALLY negotiated
+    int actual_w = (int)cap.get(cv::CAP_PROP_FRAME_WIDTH);
+    int actual_h = (int)cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+    int actual_fps = (int)cap.get(cv::CAP_PROP_FPS);
+    int actual_fourcc = (int)cap.get(cv::CAP_PROP_FOURCC);
+
+    printf("---INFO_CUSTOM: V4L2 Negotiated: %dx%d @ %d FPS | Codec: %c%c%c%c\n",
+           actual_w, actual_h, actual_fps,
+           actual_fourcc & 0xFF,
+           (actual_fourcc >> 8) & 0xFF,
+           (actual_fourcc >> 16) & 0xFF,
+           (actual_fourcc >> 24) & 0xFF);
 
     return 1;
 }
@@ -34,26 +45,21 @@ int init_camera(int width, int height) {
 unsigned char* get_camera_frame(void) {
     if (!cap.isOpened()) return nullptr;
     
-    cap >> frame; // Grab a new frame
-    if (frame.empty()) return nullptr;
+    cap >> raw_frame; // Grab a new frame from hardware
+    if (raw_frame.empty()) return nullptr;
     
-    // Convert BGR to RGB for Raylib and TFLite
-    cv::cvtColor(frame, rgb_frame, cv::COLOR_BGR2RGBA);
-
-    cv::flip(rgb_frame, flipped_rgb_frame, 1); //make the image behavior like a mirror, flip it horizontally
+    // Flip horizontally ONCE here so both Raylib and the AI see the mirrored image
+    cv::flip(raw_frame, frame, 1);
     
-    // Return a raw pointer to the pixel array
-    return flipped_rgb_frame.data; 
+    // Convert BGR to RGBA for Raylib
+    cv::cvtColor(frame, rgba_frame, cv::COLOR_BGR2RGBA);
+    
+    return rgba_frame.data; 
 }
 
 int get_preprocessed_frame(float* out_buffer, int target_size) {
     if (frame.empty() || out_buffer == nullptr) return 0;
 
-    // 1. Convert original BGR frame to 3-channel RGB (AI models don't want Alpha)
-    cv::Mat rgb_ai;
-    cv::cvtColor(frame, rgb_ai, cv::COLOR_BGR2RGB);
-
-    // 2. Calculate scaling factor to fit inside target_size x target_size
     int orig_w = frame.cols;
     int orig_h = frame.rows;
     float scale = std::min((float)target_size / orig_w, (float)target_size / orig_h);
@@ -61,11 +67,10 @@ int get_preprocessed_frame(float* out_buffer, int target_size) {
     int new_w = (int)(orig_w * scale);
     int new_h = (int)(orig_h * scale);
 
-    // 1. Shrink FIRST (much faster than converting color on 1280x720)
+    // 1. Shrink FIRST on the 3-channel BGR image
     cv::resize(frame, resized_bgr, cv::Size(new_w, new_h), 0, 0, cv::INTER_NEAREST);
 
-    // 3. Pad with black bars (letterboxing) to make a perfect target_size x target_size square
-    // 2. Pad the small image
+    // 2. Pad the small image with black bars to target_size x target_size (192x192)
     int pad_top = (target_size - new_h) / 2;
     int pad_bottom = target_size - new_h - pad_top;
     int pad_left = (target_size - new_w) / 2;
@@ -74,11 +79,10 @@ int get_preprocessed_frame(float* out_buffer, int target_size) {
     cv::copyMakeBorder(resized_bgr, padded_bgr, pad_top, pad_bottom, pad_left, pad_right, 
                        cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
 
-    // 4. Convert uint8 [0-255] to float32 [0.0-1.0] directly into a wrapper Mat
-    // 3. Convert BGR -> RGB only on the tiny 192x192 image (36,864 pixels instead of 921,600!)
+    // 3. Convert BGR -> RGB only on the tiny 192x192 image
     cv::cvtColor(padded_bgr, padded_rgb, cv::COLOR_BGR2RGB);
 
-    // 4. Normalize to float32 [0.0, 1.0]
+    // 4. Normalize uint8 [0-255] to float32 [0.0-1.0] directly into TFLite's buffer
     cv::Mat float_mat(target_size, target_size, CV_32FC3, out_buffer);
     padded_rgb.convertTo(float_mat, CV_32FC3, 1.0 / 255.0);
 

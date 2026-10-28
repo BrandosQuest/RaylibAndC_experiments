@@ -24,6 +24,29 @@ int main(void) {
     Texture2D camTexture = LoadTextureFromImage(blankImage);
     UnloadImage(blankImage);
 
+    // Load the Palm Detection model
+    // Note: Assuming you run the binary from the project root
+    TfLiteModel* palm_model = TfLiteModelCreateFromFile("src/palm_detection_lite.tflite");
+    if (!palm_model) {
+        printf("Failed to load palm_detection_lite.tflite\n");
+        return 1;
+    }
+
+    TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
+    TfLiteInterpreterOptionsSetNumThreads(options, 2);
+    TfLiteInterpreter* palm_interpreter = TfLiteInterpreterCreate(palm_model, options);
+    TfLiteInterpreterAllocateTensors(palm_interpreter);
+
+    // Inspect Input Tensor 0
+    TfLiteTensor* input_tensor = TfLiteInterpreterGetInputTensor(palm_interpreter, 0);
+    printf("Palm Model Input Dimensions: [%d, %d, %d, %d] | Type: %d | Bytes: %zu\n",
+        TfLiteTensorDim(input_tensor, 0), // Batch size (1)
+        TfLiteTensorDim(input_tensor, 1), // Height (usually 192)
+        TfLiteTensorDim(input_tensor, 2), // Width (usually 192)
+        TfLiteTensorDim(input_tensor, 3), // Channels (3 - RGB)
+        TfLiteTensorType(input_tensor),   // kTfLiteFloat32 (1)
+        TfLiteTensorByteSize(input_tensor));
+
     while (!WindowShouldClose()) {
         // 1. Grab the raw RGB pixel data from OpenCV
         unsigned char* frameData = get_camera_frame();
@@ -35,7 +58,7 @@ int main(void) {
 
         // 3. Draw the texture to the screen
         BeginDrawing();
-        ClearBackground(BLACK);
+        //ClearBackground(BLACK);
         if (frameData != NULL) {
             DrawTexture(camTexture, 0, 0, WHITE);
         } else {
@@ -47,6 +70,10 @@ int main(void) {
     close_camera();
     UnloadTexture(camTexture);
     CloseWindow();
-    
+
+    TfLiteInterpreterDelete(palm_interpreter);
+    TfLiteInterpreterOptionsDelete(options);
+    TfLiteModelDelete(palm_model);
+
     return 0;
 }

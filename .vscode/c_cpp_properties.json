@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/build/external/raylib-master/src/**",
-                "${workspaceFolder}/src/**"
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/include"
             ],
             "defines": [
                 "_DEBUG",

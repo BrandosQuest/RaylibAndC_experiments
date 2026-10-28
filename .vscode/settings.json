@@ -8,5 +8,6 @@
 		"**/*.o": true,
 		"**/*.exe": true,
 	},
-	"makefile.configureOnOpen": true
+	"makefile.configureOnOpen": true,
+	"C_Cpp.errorSquiggles": "enabled"
 }

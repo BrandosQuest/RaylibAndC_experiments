@@ -195,7 +195,8 @@ if (downloadRaylib) then
         -- Note: Assuming your executable ends up in bin/Debug/, the relative path back up to lib/ is ../../lib
         linkoptions { 
             "`pkg-config --libs opencv4`",
-            "-Wl,-rpath=../../lib" 
+            "-Wl,-rpath=../../lib",
+            "-Wl,-rpath='$$ORIGIN/../../lib'"
         }
 
 

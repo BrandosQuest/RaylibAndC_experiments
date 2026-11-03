@@ -1,7 +1,7 @@
 tensorflow/
 
 # Build outputs
-bin/
+#bin/
 obj/
 
 
@@ -35,4 +35,4 @@ build/compile_commands.json
 *.o
 *.a
 *.d
-*.so
+#.so

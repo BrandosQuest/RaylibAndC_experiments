@@ -42,3 +42,34 @@ ancor haptic maps in to 3d spaces?
 syntesize haptic stimulay from the 3d spaces to the humans?
 
 
+
+professor: unibz 
+Images related with biomedical, mri scans
+to try to detect alzimer deseas
+impact on social, care and medical fields
+mri, to segmentation, feauture generation, ML side
+
+useful it is age estimation, if it is much more, it is bad
+
+20000 images open source sw, from mri to 230 picture vector
+
+rashomon set - model selections
+each of the poit of view has different stories
+
+IRIS MoDECT sequential RGB and Multispectral acquisition
+To detect deseasis of apple trees
+
+
+LLM and producion of reliable code
+how to guide the ai producing code
+usign llms to analize code quality
+some studies to make comparaisons
+llm based or traditinal ways
+java and phython
+
+
+KNIME project 
+famework for no code developement with nodes for all actions
+
+
+free sw conference in bolzano

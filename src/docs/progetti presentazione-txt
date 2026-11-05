@@ -1,6 +1,44 @@
+Popuate exel file with project
+small abstract
+
+
 francesco ardan dal ri audio signals and itelligent systems
 
 audio and music   basiic ml, signal rocessing, music and listening
 
 synth could learn the sample?
+how to control synth
+neural dsp  equalisers and other stuff
+what is dsp???
+from spectrogram to original audio, pithc timber dynamics?
+can ai reognize animals? with sound
+sample rate agnostic classifier, clusterize the noise
+
+authomatic segmentation models for musc 
+audio gap filling, audio impainting, fill the gap, rapar little holes, package recovery
+
+francesco.dalri-2@unitn.it
+
+
+
+Andrea montirelli? deepfake detection   speech
+chiara...   adversarial perturbation injection
+
+forensics methods for deepfake detection
+hard for compressed video
+
+adversarial perturbation injection, some noise to trick the detectors
+2 views, about detention? i want to test different detections or implement detector
+Or try something about fooling the detectors
+
+
+
+antonio stefani haptic aware digital twins
+telemedicine, remote object manipulation, digitalised objects 
+touch, muscles and tendons
+focus on touch, skin, vibrations, pressure, texture...
+Artificial touch sensations
+ancor haptic maps in to 3d spaces?
+syntesize haptic stimulay from the 3d spaces to the humans?
+
 
